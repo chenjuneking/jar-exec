@@ -1,0 +1,32 @@
+{
+  "release_name": "jdk8u302-b08",
+  "release_link": "https://github.com/adoptium/temurin8-binaries/releases/tag/jdk8u302-b08",
+  "timestamp": "2021-07-29T19:22:38Z",
+  "release": true,
+  "binaries": [
+    {
+      "os": "mac",
+      "architecture": "x64",
+      "binary_type": "jre",
+      "openjdk_impl": "hotspot",
+      "binary_name": "OpenJDK8U-jre_x64_mac_hotspot_8u302b08.tar.gz",
+      "binary_link": "http://localhost:8080/v2/info/releases/download/jdk8u302-b08/OpenJDK8U-jre_x64_mac_hotspot_8u302b08.tar.gz",
+      "binary_size": 44801719,
+      "checksum_link": "http://localhost:8080/v2/info/releases/download/jdk8u302-b08/OpenJDK8U-jre_x64_mac_hotspot_8u302b08.tar.gz.sha256.txt",
+      "installer_name": "OpenJDK8U-jre_x64_mac_hotspot_8u302b08.pkg",
+      "installer_link": "http://localhost:8080/v2/info/releases/download/OpenJDK8U-jre_x64_mac_hotspot_8u302b08.pkg",
+      "installer_size": 44885405,
+      "installer_checksum_link": "http://localhost:8080/v2/info/releases/download/jdk8u302-b08/OpenJDK8U-jre_x64_mac_hotspot_8u302b08.pkg.sha256.txt",
+      "installer_download_count": 1825,
+      "version": "8",
+      "version_data": {
+        "openjdk_version": "1.8.0_302-b08",
+        "semver": "8.0.302+8"
+      },
+      "heap_size": "normal",
+      "download_count": 4478,
+      "updated_at": "2021-08-23T09:47:03Z"
+    }
+  ],
+  "download_count": 335170
+}
