@@ -1,8 +1,11 @@
 {
   "name": "jar-exec",
   "version": "1.0.0",
-  "description": "Execute jar application on node.js",
+  "description": "Running JAR files on node.js",
   "main": "dist/index.js",
+  "bin": {
+    "jar-exec": "dist/bin.js"
+  },
   "files": [
     "dist"
   ],
@@ -16,8 +19,11 @@
   "author": "JunQing Chen <342115615@qq.com>",
   "license": "ISC",
   "dependencies": {
+    "bytes": "^3.1.0",
+    "date-fns": "^2.25.0",
     "find-java-home": "^1.2.2",
-    "node-fetch": "^3.0.0",
+    "lodash.throttle": "^4.1.1",
+    "node-fetch": "^2.6.0",
     "tar": "^6.1.11",
     "typescript": "^4.4.3",
     "yauzl": "^2.10.0"
@@ -25,8 +31,11 @@
   "devDependencies": {
     "@babel/core": "^7.15.5",
     "@babel/preset-env": "^7.15.6",
+    "@types/bytes": "^3.1.1",
     "@types/jest": "^27.0.2",
+    "@types/lodash.throttle": "^4.1.6",
     "@types/node": "^16.10.2",
+    "@types/node-fetch": "^2.5.12",
     "@types/tar": "^4.0.5",
     "@types/yauzl": "^2.9.2",
     "@typescript-eslint/eslint-plugin": "^4.32.0",

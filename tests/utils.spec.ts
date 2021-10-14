@@ -22,7 +22,7 @@ const CHECKSUM_LINK =
 const DIR = path.join(__dirname, './tmp/a/b')
 const TEST_TIMEOUT = 600000
 
-describe.skip('Test utils.ts', () => {
+describe('Test utils.ts', () => {
   beforeAll(() => {
     execSync(`rm -rf ${path.join(__dirname, './tmp')}`)
   })

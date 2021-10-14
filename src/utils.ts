@@ -8,6 +8,7 @@ import yauzl from 'yauzl'
 import tar from 'tar'
 import internal from 'stream'
 import { JRE_PATH } from './constants'
+import { withProgress } from './progress'
 
 export function getExecutable(): string {
   const platform = os.platform()
@@ -53,8 +54,10 @@ export async function download(url: string, destDir: string): Promise<string> {
     return ''
   }
   try {
+    const basename = path.basename(url)
+    const destFile = path.join(destDir, basename)
     const response = await fetch(url)
-    const destFile = path.join(destDir, path.basename(url))
+    withProgress(response, `download ${basename}`)
     return new Promise((resolve) => {
       response.body
         ?.pipe(fs.createWriteStream(destFile))

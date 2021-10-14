@@ -4,7 +4,7 @@ import { executeClassWithCP, executeJar, install } from '../src'
 
 const TEST_TIMEOUT = 600000
 
-describe('Test index.ts', () => {
+describe.skip('Test index.ts', () => {
   beforeAll(() => {
     execSync(`rm -rf ${path.join(__dirname, '../dist/jre')}`)
   })

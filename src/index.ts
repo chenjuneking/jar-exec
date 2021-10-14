@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { spawn } from 'child_process'
-import fetch from 'node-fetch'
+import fetch, { Response } from 'node-fetch'
 import {
   download,
   move,
@@ -69,8 +69,7 @@ export async function install(version = 8, options: any = {}): Promise<number> {
   const tmpDir = path.join(__dirname, DOWNLOAD_TMP_DIR)
 
   // fetch the json
-  const response: { json: () => any; status: number; statusText: string } =
-    await fetch(url)
+  const response: Response = await fetch(url)
   if (response.status !== 200) {
     console.error(`Failure to fetch ${url}, ${response.statusText}`)
     return 0
