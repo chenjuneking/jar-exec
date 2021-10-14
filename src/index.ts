@@ -2,7 +2,6 @@ import fs from 'fs'
 import path from 'path'
 import { spawn } from 'child_process'
 import fetch from 'node-fetch'
-import { DEFAULT_REGISTRY } from './constants'
 import {
   download,
   move,
@@ -11,6 +10,7 @@ import {
   extract,
   getJavaCommand,
 } from './utils'
+import { DOWNLOAD_TMP_DIR } from './constants'
 
 export async function install(version = 8, options: any = {}): Promise<number> {
   const {
@@ -25,9 +25,8 @@ export async function install(version = 8, options: any = {}): Promise<number> {
     if (await systemJavaExists()) return 0
   }
 
-  const registry = options.registry || DEFAULT_REGISTRY
-
-  let url = `${registry}/v2/info/releases/openjdk${version}?`
+  // the basic url
+  let url = `https://api.adoptopenjdk.net/v2/info/releases/openjdk${version}?`
 
   if (!options.os) {
     switch (process.platform) {
@@ -67,10 +66,9 @@ export async function install(version = 8, options: any = {}): Promise<number> {
     url += key + '=' + options[key] + '&'
   })
 
-  const tmpDir = path.join(__dirname, 'jre-key')
+  const tmpDir = path.join(__dirname, DOWNLOAD_TMP_DIR)
 
-  // https://api.adoptopenjdk.net/v2/info/releases/openjdk8?type=jre&allow_system_java=false&openjdk_impl=hotspot&release=latest&os=mac&arch=x64&
-  console.info(`Fetching ${url}`)
+  // fetch the json
   const response: { json: () => any; status: number; statusText: string } =
     await fetch(url)
   if (response.status !== 200) {
@@ -78,31 +76,43 @@ export async function install(version = 8, options: any = {}): Promise<number> {
     return 0
   }
   const json = await response.json()
+  // get binary link & SHA text link from the downloaded json
   const binaryUrl = json.binaries[0]['binary_link']
   const shaTextUrl = json.binaries[0]['checksum_link']
 
-  console.info(`Download ${binaryUrl}`)
+  // download binary file
   const binaryFile = await download(binaryUrl, tmpDir)
 
-  console.info(`Download ${shaTextUrl}`)
+  // download SHA text file
   const shaTextFile = await download(shaTextUrl, tmpDir)
 
-  console.info(`Verify...`)
+  // verify the binary file
   const shaText = fs.readFileSync(shaTextFile, 'utf-8').split(' ')[0]
   if (!(await verify(binaryFile, shaText))) {
     console.error(`File and checksum don\'t match`)
     return 0
   }
 
-  console.info(`Moving...`)
+  // move the binary file to  /dist/jre folder
   const newFile = await move(binaryFile)
 
-  console.info(`Extract...`)
+  // extract the binary file
   await extract(newFile as string)
 
   return 1
 }
 
+/**
+ * Execute the jar
+ * @param jarPath {string} path to the jar file which should be executed
+ * @param args {string[]} optional arguments that will be appended while executing
+ * @returns {string} the result string
+ * Usage:
+ *    const result = await executeJar(
+ *      path.join(__dirname, './example/Math/Math.jar'),
+ *      ['add', '21', '32']
+ *    )
+ */
 export async function executeJar(
   jarPath: string,
   args: string[] = []
@@ -123,6 +133,19 @@ export async function executeJar(
   })
 }
 
+/**
+ * Execute the class with -cp
+ * @param className {string} Java classname to execute
+ * @param classPaths {string} optional the classpath
+ * @param args {string[]} optional arguments that will be appended while executing
+ * @returns {string} the result string
+ * Usage:
+ *    const result = await executeClassWithCP(
+ *      'App.Main',
+ *      path.join(__dirname, './example/Math'),
+ *      ['add', '21', '32']
+ *    )
+ */
 export async function executeClassWithCP(
   className: string,
   classPaths = '',

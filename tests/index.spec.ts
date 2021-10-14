@@ -1,34 +1,37 @@
 import path from 'path'
+import { execSync } from 'child_process'
 import { executeClassWithCP, executeJar, install } from '../src'
-import { DEFAULT_REGISTRY } from '../src/constants'
 
-const isMock = !!process.env.MOCK
-const isCI = !!process.env.CI
-const registry = isMock ? 'http://localhost:8080' : DEFAULT_REGISTRY
+const TEST_TIMEOUT = 600000
 
 describe('Test index.ts', () => {
-  test('#install() - it should return 0 if system java exists', async () => {
-    const systemExistsJava = !isCI
-    const result = await install(8, {
-      type: 'jre',
-      allow_system_java: true,
-      registry,
-    })
-    if (systemExistsJava) {
-      expect(result).toEqual(0)
-    } else {
-      expect(result).toEqual(1)
-    }
+  beforeAll(() => {
+    execSync(`rm -rf ${path.join(__dirname, '../dist/jre')}`)
   })
 
-  test('#install() - it should return 1 whatever system exists java', async () => {
-    const result = await install(8, {
-      type: 'jre',
-      allow_system_java: false,
-      registry,
-    })
-    expect(result).toEqual(1)
-  })
+  test(
+    '#install() - it should return 0 if system java exists',
+    async () => {
+      const result = await install(16, {
+        type: 'jre',
+        allow_system_java: true,
+      })
+      expect(result).toEqual(0)
+    },
+    TEST_TIMEOUT
+  )
+
+  test(
+    '#install() - it should return 1 whatever system exists java',
+    async () => {
+      const result = await install(16, {
+        type: 'jre',
+        allow_system_java: false,
+      })
+      expect(result).toEqual(1)
+    },
+    TEST_TIMEOUT
+  )
 
   test('#executeJar()', async () => {
     const jarPath = path.join(__dirname, './fixtures/example/Math/Math.jar')

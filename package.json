@@ -7,10 +7,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf dist && tsc",
-    "serve": "http-server",
-    "test:ci": "CI=true jest --runInBand --detectOpenHandles --collectCoverage=false",
-    "test:mock": "start-server-and-test serve http://localhost:8080 'MOCK=true jest --runInBand --detectOpenHandles --collectCoverage=false'",
+    "prebuild": "rm -rf dist",
+    "build": "tsc",
+    "test": "jest --runInBand --detectOpenHandles --collectCoverage=false",
     "lint": "eslint",
     "prepare": "npm run build"
   },
@@ -35,7 +34,6 @@
     "babel-jest": "^27.2.4",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
-    "http-server": "^13.0.2",
     "husky": "^7.0.2",
     "jest": "^27.2.4",
     "lint-staged": "^11.1.2",

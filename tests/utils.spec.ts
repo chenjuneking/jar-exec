@@ -12,35 +12,19 @@ import {
   getJavaPath,
   makeDir,
   move,
-  systemJavaExists,
   verify,
 } from '../src/utils'
-import { DEFAULT_REGISTRY } from '../src/constants'
 
-const isMock = !!process.env.MOCK
-const isCI = !!process.env.CI
-const registry = isMock ? 'http://localhost:8080' : DEFAULT_REGISTRY
+const BINARY_LINK =
+  'https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_linux_hotspot_16.0.1_9.tar.gz'
+const CHECKSUM_LINK =
+  'https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_linux_hotspot_16.0.1_9.tar.gz.sha256.txt'
+const DIR = path.join(__dirname, './tmp/a/b')
+const TEST_TIMEOUT = 600000
 
 describe.skip('Test utils.ts', () => {
-  const BINARY_LINK = `${registry}/v2/info/releases/download/jdk8u302-b08/OpenJDK8U-jre_x64_mac_hotspot_8u302b08.tar.gz`
-  const CHECKSUM_LINK = `${registry}/v2/info/releases/download/jdk8u302-b08/OpenJDK8U-jre_x64_mac_hotspot_8u302b08.tar.gz.sha256.txt`
-  const DIR = path.join(__dirname, './tmp/a/b')
-
-  // options = {
-  //   openjdk_impl: 'hotspot',
-  //   release: 'latest',
-  //   type: 'jre',
-  //   allow_system_java: true,
-  //   arch: 'x64'
-  // }
-
   beforeAll(() => {
     execSync(`rm -rf ${path.join(__dirname, './tmp')}`)
-  })
-
-  test('#systemJavaExists()', async () => {
-    const result = await systemJavaExists()
-    expect(result).toEqual(!isCI)
   })
 
   test('#getExecutable()', () => {
@@ -64,12 +48,16 @@ describe.skip('Test utils.ts', () => {
     expect(fs.existsSync(DIR)).toBe(true)
   })
 
-  test('#download()', async () => {
-    const result1 = await download(BINARY_LINK, DIR)
-    expect(result1).toEqual(`${DIR}/${path.basename(BINARY_LINK)}`)
-    const result2 = await download(CHECKSUM_LINK, DIR)
-    expect(result2).toEqual(`${DIR}/${path.basename(CHECKSUM_LINK)}`)
-  }, 50000)
+  test(
+    '#download()',
+    async () => {
+      const result1 = await download(BINARY_LINK, DIR)
+      expect(result1).toEqual(`${DIR}/${path.basename(BINARY_LINK)}`)
+      const result2 = await download(CHECKSUM_LINK, DIR)
+      expect(result2).toEqual(`${DIR}/${path.basename(CHECKSUM_LINK)}`)
+    },
+    TEST_TIMEOUT
+  )
 
   test('#genChecksum()', async () => {
     const binaryFile = `${DIR}/${path.basename(BINARY_LINK)}`
