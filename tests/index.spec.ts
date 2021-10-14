@@ -1,21 +1,31 @@
 import path from 'path'
 import { executeClassWithCP, executeJar, install } from '../src'
+import { DEFAULT_REGISTRY } from '../src/constants'
+
+const isMock = !!process.env.MOCK
+const isCI = !!process.env.CI
+const registry = isMock ? 'http://localhost:8080' : DEFAULT_REGISTRY
 
 describe('Test index.ts', () => {
   test('#install() - it should return 0 if system java exists', async () => {
+    const systemExistsJava = !isCI
     const result = await install(8, {
       type: 'jre',
       allow_system_java: true,
-      registry: 'http://localhost:8080',
+      registry,
     })
-    expect(result).toEqual(0)
+    if (systemExistsJava) {
+      expect(result).toEqual(0)
+    } else {
+      expect(result).toEqual(1)
+    }
   })
 
-  test('#install() - it should return 1 if install sucussfully', async () => {
+  test('#install() - it should return 1 whatever system exists java', async () => {
     const result = await install(8, {
       type: 'jre',
       allow_system_java: false,
-      registry: 'http://localhost:8080',
+      registry,
     })
     expect(result).toEqual(1)
   })

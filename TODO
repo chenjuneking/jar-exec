@@ -1,4 +1,4 @@
 // TODO
-//  [ ] Build
+//  [x] Build - 使用 rollup 或 tsc
 //  [ ] Add github actions
 //  [ ] publish to NPM

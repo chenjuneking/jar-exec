@@ -1,17 +1,20 @@
 {
   "name": "jar-exec",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Execute jar application on node.js",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "serve": "http-server",
-    "test": "jest --runInBand --detectOpenHandles --collectCoverage=false",
-    "test:mock": "start-server-and-test serve http://localhost:8080 test",
+    "test:ci": "CI=true jest --runInBand --detectOpenHandles --collectCoverage=false",
+    "test:mock": "start-server-and-test serve http://localhost:8080 'MOCK=true jest --runInBand --detectOpenHandles --collectCoverage=false'",
     "lint": "eslint",
-    "prepare": "husky install"
+    "prepare": "npm run build"
   },
-  "author": "",
+  "author": "JunQing Chen <342115615@qq.com>",
   "license": "ISC",
   "dependencies": {
     "find-java-home": "^1.2.2",

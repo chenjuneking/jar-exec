@@ -15,13 +15,16 @@ import {
   systemJavaExists,
   verify,
 } from '../src/utils'
+import { DEFAULT_REGISTRY } from '../src/constants'
+
+const isMock = !!process.env.MOCK
+const isCI = !!process.env.CI
+const registry = isMock ? 'http://localhost:8080' : DEFAULT_REGISTRY
 
 describe.skip('Test utils.ts', () => {
-  // const URL = 'https://api.adoptopenjdk.net/v2/info/releases/openjdk8?openjdk_impl=hotspot&release=latest&type=jre&allow_system_java=true&arch=x64'
-  const BINARY_LINK =
-    'http://localhost:8080/v2/info/releases/download/jdk8u302-b08/OpenJDK8U-jre_x64_mac_hotspot_8u302b08.tar.gz'
-  const CHECKSUM_LINK =
-    'http://localhost:8080/v2/info/releases/download/jdk8u302-b08/OpenJDK8U-jre_x64_mac_hotspot_8u302b08.tar.gz.sha256.txt'
+  const BINARY_LINK = `${registry}/v2/info/releases/download/jdk8u302-b08/OpenJDK8U-jre_x64_mac_hotspot_8u302b08.tar.gz`
+  const CHECKSUM_LINK = `${registry}/v2/info/releases/download/jdk8u302-b08/OpenJDK8U-jre_x64_mac_hotspot_8u302b08.tar.gz.sha256.txt`
+  const DIR = path.join(__dirname, './tmp/a/b')
 
   // options = {
   //   openjdk_impl: 'hotspot',
@@ -31,15 +34,13 @@ describe.skip('Test utils.ts', () => {
   //   arch: 'x64'
   // }
 
-  const DIR = path.join(__dirname, './tmp/a/b')
-
   beforeAll(() => {
     execSync(`rm -rf ${path.join(__dirname, './tmp')}`)
   })
 
   test('#systemJavaExists()', async () => {
     const result = await systemJavaExists()
-    expect(result).toEqual(true)
+    expect(result).toEqual(!isCI)
   })
 
   test('#getExecutable()', () => {
@@ -119,7 +120,7 @@ describe.skip('Test utils.ts', () => {
     expect(fs.existsSync(tmpZipFile)).toBe(false)
   })
 
-  test('#getJavaString()', () => {
+  test('#getJavaPath()', () => {
     const platform = os.platform()
     const result = getJavaPath()
     if (platform === 'darwin') {
