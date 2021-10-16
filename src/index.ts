@@ -4,14 +4,22 @@ import { spawn } from 'child_process'
 import fetch, { Response } from 'node-fetch'
 import {
   download,
-  move,
   systemJavaExists,
   verify,
   extract,
   getJavaCommand,
+  getJavaPath,
 } from './utils'
 import { DOWNLOAD_TMP_DIR } from './constants'
+import { Manager } from './manager'
+import { println } from './stdout'
 
+/**
+ * Install a specify version of openjdk
+ * @param version {number} the version of openjdk
+ * @param options {object} the request options
+ * @returns
+ */
 export async function install(version = 8, options: any = {}): Promise<number> {
   const {
     openjdk_impl = 'hotspot',
@@ -66,12 +74,10 @@ export async function install(version = 8, options: any = {}): Promise<number> {
     url += key + '=' + options[key] + '&'
   })
 
-  const tmpDir = path.join(__dirname, DOWNLOAD_TMP_DIR)
-
   // fetch the json
   const response: Response = await fetch(url)
   if (response.status !== 200) {
-    console.error(`Failure to fetch ${url}, ${response.statusText}`)
+    println(`[Error] njar: failure to fetch ${url}, ${response.statusText}`)
     return 0
   }
   const json = await response.json()
@@ -79,26 +85,65 @@ export async function install(version = 8, options: any = {}): Promise<number> {
   const binaryUrl = json.binaries[0]['binary_link']
   const shaTextUrl = json.binaries[0]['checksum_link']
 
-  // download binary file
-  const binaryFile = await download(binaryUrl, tmpDir)
-
-  // download SHA text file
-  const shaTextFile = await download(shaTextUrl, tmpDir)
+  const binaryFile = path.join(DOWNLOAD_TMP_DIR, path.basename(binaryUrl))
+  const shaTextFile = path.join(DOWNLOAD_TMP_DIR, path.basename(shaTextUrl))
+  if (!fs.existsSync(binaryFile) || !fs.existsSync(shaTextFile)) {
+    // download files if not exists
+    if (
+      !(await download(binaryUrl, binaryFile)) ||
+      !(await download(shaTextUrl, shaTextFile))
+    ) {
+      return 0
+    }
+  } else {
+    println(`[Info] njar: openjdk${version} binary file exists.`)
+  }
 
   // verify the binary file
+  println(`[Info] njar: verifying...`)
   const shaText = fs.readFileSync(shaTextFile, 'utf-8').split(' ')[0]
   if (!(await verify(binaryFile, shaText))) {
-    console.error(`File and checksum don\'t match`)
+    println(
+      `[Error] njar: file and checksum don\'t match, please install again.`
+    )
     return 0
   }
 
-  // move the binary file to  /dist/jre folder
-  const newFile = await move(binaryFile)
-
   // extract the binary file
-  await extract(newFile as string)
+  println(`[Info] njar: extract...`)
+  const jreDir = await extract(binaryFile, String(version))
+
+  // save the downloaded jre path
+  const manager = await Manager.getInstance()
+  manager.set(String(version), jreDir).save()
 
   return 1
+}
+
+/**
+ * Get current java path
+ * @returns {string} the java path
+ */
+export async function which(): Promise<string> {
+  return await getJavaPath()
+}
+
+/**
+ * Use a specify jdk version
+ * @param version {string|number} the specify jdk version
+ */
+export async function use(version: string | number): Promise<void> {
+  const manager = await Manager.getInstance()
+  manager.setCurrentVersion(String(version)).save()
+}
+
+/**
+ * List the installed versions
+ * @returns {string[]} Array of the install jdk versions
+ */
+export async function versions(): Promise<string[]> {
+  const manager = await Manager.getInstance()
+  return manager.getVersions()
 }
 
 /**
@@ -126,7 +171,7 @@ export async function executeJar(
     output.stderr.on('data', (data) => {
       reject(data.toString())
     })
-    output.on('close', (code) => {
+    output.on('close', () => {
       resolve(result)
     })
   })
@@ -162,7 +207,7 @@ export async function executeClassWithCP(
     output.stderr.on('data', (data) => {
       reject(data.toString())
     })
-    output.on('close', (code) => {
+    output.on('close', () => {
       resolve(result)
     })
   })

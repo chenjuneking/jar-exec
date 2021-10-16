@@ -16,7 +16,7 @@ npm install jar-exec --save
 
 ```bash
 cd to/your/project
-npx jar-exec install 16 # install openjdk16
+npx njar install 16 # install openjdk16
 ```
 
 ### Running JAR files

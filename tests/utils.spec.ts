@@ -14,7 +14,10 @@ import {
   move,
   verify,
 } from '../src/utils'
+import { use } from '../src/index'
+import { Manager } from '../src/manager'
 
+const VERSION = '16'
 const BINARY_LINK =
   'https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_linux_hotspot_16.0.1_9.tar.gz'
 const CHECKSUM_LINK =
@@ -23,8 +26,15 @@ const DIR = path.join(__dirname, './tmp/a/b')
 const TEST_TIMEOUT = 600000
 
 describe('Test utils.ts', () => {
-  beforeAll(() => {
-    execSync(`rm -rf ${path.join(__dirname, './tmp')}`)
+  afterAll(() => {
+    const manager = Manager.getInstance()
+    if (fs.existsSync(manager.manifest)) {
+      execSync(`rm ${manager.manifest}`)
+    }
+    const tmpDir = path.join(__dirname, './tmp')
+    if (fs.existsSync(manager.manifest)) {
+      execSync(`rm -rf ${tmpDir}`)
+    }
   })
 
   test('#getExecutable()', () => {
@@ -88,7 +98,7 @@ describe('Test utils.ts', () => {
     await makeDir(dist)
     expect(fs.existsSync(dist)).toBe(true)
     // tar file
-    const result = await extractTarGz(newFile as string, dist)
+    const result = await extractTarGz(newFile as string, dist, VERSION)
     expect(typeof result).toEqual('string')
   })
 
@@ -109,6 +119,7 @@ describe('Test utils.ts', () => {
   })
 
   test('#getJavaPath()', () => {
+    use(VERSION)
     const platform = os.platform()
     const result = getJavaPath()
     if (platform === 'darwin') {

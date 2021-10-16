@@ -3,6 +3,7 @@ import { formatDistanceToNow, addSeconds } from 'date-fns'
 import throttle from 'lodash.throttle'
 import bytes from 'bytes'
 import { Response } from 'node-fetch'
+import { print, println } from './stdout'
 
 export interface IProgressOptions {
   interval?: number
@@ -43,10 +44,11 @@ export class Progress extends EventEmitter {
     )
     response.body.on('data', (chunk: any) => {
       this.done += chunk.length
-      return throttled()
+      if (this.done < this.total) {
+        throttled()
+      }
     })
     response.body.on('end', () => {
-      this.onProgress()
       this.emit('finish')
     })
   }
@@ -86,10 +88,13 @@ export class Progress extends EventEmitter {
 export function withProgress(response: Response, description: string) {
   const progress = new Progress(response, { interval: 100 })
   progress.on('progress', (meta: IProgressMeta) => {
-    console.info(
-      `[Info] jre-exec: ${description} (${Math.round(meta.progress * 100)}%) ${
-        meta.rateDescribe
-      }`
-    )
+    const message = `[Info] njar: ${description} (${Math.round(
+      meta.progress * 100
+    )}%) ${meta.rateDescribe}`
+    print(message)
+  })
+  progress.on('finish', () => {
+    const message = `[Info] njar: ${description} - done.`
+    println(message)
   })
 }

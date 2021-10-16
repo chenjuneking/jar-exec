@@ -1,10 +1,10 @@
 {
-  "name": "jar-exec",
+  "name": "njar",
   "version": "1.0.0",
   "description": "Running JAR files on node.js",
   "main": "dist/index.js",
   "bin": {
-    "jar-exec": "dist/bin.js"
+    "njar": "dist/bin.js"
   },
   "files": [
     "dist"
@@ -19,6 +19,7 @@
   "author": "JunQing Chen <342115615@qq.com>",
   "license": "ISC",
   "dependencies": {
+    "abort-controller": "^3.0.0",
     "bytes": "^3.1.0",
     "date-fns": "^2.25.0",
     "find-java-home": "^1.2.2",
