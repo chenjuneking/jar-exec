@@ -12,7 +12,7 @@ For more details, see the [example](https://github.com/chenjuneking/njar/tree/ma
 
 ```bash
 npm install njar --save # install locally
-npm install njar -g # or install global
+npm install njar -g # or install globally
 ```
 
 ## Usage
@@ -20,8 +20,8 @@ npm install njar -g # or install global
 ### Install a specify version of openJDK
 
 ```bash
-cd to/your/project
-npx njar install 16 # install openjdk16
+njar install 16 # install openjdk16
+njar use 16 # use openjdk16
 ```
 
 ### Running JAR files
