@@ -6,8 +6,8 @@ In the project directory, you can run the demo as follow:
 # install the dependencies
 $ npm install
 
-# install openJDK12
-$ npx jar-exec install 15
+# install openjdk16
+$ npx njar install 16
 
 # running the app
 $ node index.js

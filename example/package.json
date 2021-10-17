@@ -1,7 +1,7 @@
 {
   "name": "example",
   "version": "1.0.0",
-  "description": "Example of jar-exec",
+  "description": "Example of njar",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,6 +9,6 @@
   "author": "JunQing Chen <342115615@qq.com>",
   "license": "MIT",
   "dependencies": {
-    "jar-exec": "file:../"
+    "njar": "file:../"
   }
 }

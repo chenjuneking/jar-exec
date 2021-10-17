@@ -1,5 +1,5 @@
 const path = require('path')
-const { executeJar, executeClassWithCP } = require('jar-exec')
+const { executeJar, executeClassWithCP } = require('njar')
 
 async function main() {
   const jarPath = path.join(__dirname, './java/Math/Math.jar')

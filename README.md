@@ -1,13 +1,18 @@
-# jar-exe
+# njar
 
 > Running JAR files on node.js
 
 This package helps with running JAR files or Java classes on Node.js.
 
+### Example
+
+For more details, see [example](https://github.com/chenjuneking/njar/tree/main/example).
+
 ## Install
 
 ```bash
-npm install jar-exec --save
+npm install njar --save # install locally
+npm install njar -g # or install global
 ```
 
 ## Usage
@@ -23,7 +28,7 @@ npx njar install 16 # install openjdk16
 
 ```javascript
 const path = require('path')
-const { executeJar } = require('jar-exec')
+const { executeJar } = require('njar')
 
 async function main() {
   const jarPath = path.join(__dirname, './java/Math/Math.jar')
@@ -38,7 +43,7 @@ main()
 
 ```javascript
 const path = require('path')
-const { executeClassWithCP } = require('jar-exec')
+const { executeClassWithCP } = require('njar')
 
 async function main() {
   const className = 'App.Main'
@@ -52,4 +57,14 @@ async function main() {
 }
 
 main()
+```
+
+## All CLI commands
+
+```bash
+njar install [version]  # Install a JDK version
+njar use [version]      # Set the JDK version
+njar versions           # List all JDK versions available to njar
+njar which              # Display the full path to an executable
+njar --help             # Show help information
 ```
