@@ -33,7 +33,10 @@ export class Manager {
       )
     }
     if (systemJavaHome) {
-      this.data.jrePath['system'] = systemJavaHome
+      this.set('system', systemJavaHome)
+      if (!this.getCurrentVersion()) {
+        this.setCurrentVersion('system')
+      }
     }
   }
 

@@ -15,7 +15,7 @@ import {
 } from './constants'
 import { withProgress } from './progress'
 import { Manager } from './manager'
-import { println } from './stdout'
+import { print, println } from './stdout'
 
 export function getExecutable(): string {
   const platform = os.platform()
@@ -47,6 +47,43 @@ export async function makeDir(dir: string): Promise<string | undefined> {
   }
 }
 
+export function request(url: string, tryCount: number): Promise<any> {
+  const retry = tryCount < MAX_DOWNLOAD_RECURSIVE
+  let controller: AbortController
+  let timeout: NodeJS.Timeout
+  let options: RequestInit | undefined = undefined
+
+  if (retry) {
+    controller = new AbortController()
+    timeout = setTimeout(() => controller.abort(), DOWNLOAD_ABORT_TIMEOUT)
+    options = { signal: controller.signal }
+  }
+
+  return new Promise((resolve) => {
+    fetch(url, options)
+      .then(
+        (res: Response) => {
+          if (res.status !== 200) {
+            println(`[Error] njar: failure to fetch ${url}, ${res.statusText}`)
+            resolve(null)
+          }
+          resolve(res.json())
+        },
+        (err: any) => {
+          if (err.name === 'AbortError' && retry) {
+            print(`[Info] njar: fetch information`)
+            return resolve(request(url, tryCount + 1))
+          }
+          println(`[Error] njar: fail to fetch ${url}, ${err.message}`)
+          resolve(null)
+        }
+      )
+      .finally(() => {
+        if (timeout) clearTimeout(timeout)
+      })
+  })
+}
+
 export async function download(
   url: string,
   destFile: string
@@ -68,7 +105,7 @@ function makeDownload(
   destFile: string,
   tryCount: number
 ): Promise<boolean> {
-  const basename = path.basename(url)
+  const fileType = path.extname(url) === '.txt' ? 'checksum' : 'binary'
   const retry = tryCount < MAX_DOWNLOAD_RECURSIVE
   let controller: AbortController
   let timeout: NodeJS.Timeout
@@ -84,17 +121,17 @@ function makeDownload(
     fetch(url, options)
       .then(
         (res: Response) => {
-          withProgress(res, `download ${basename}`)
+          withProgress(res, `download ${fileType}`)
           res.body
             ?.pipe(fs.createWriteStream(destFile))
             .on('finish', () => resolve(true))
         },
         (err: any) => {
           if (err.name === 'AbortError' && retry) {
-            println(`[Info] njar: download ${basename}`)
+            print(`[Info] njar: download ${fileType}`)
             return resolve(makeDownload(url, destFile, tryCount + 1))
           }
-          println(`[Error] njar: fail to download ${basename}, ${err.message}`)
+          println(`[Error] njar: fail to download ${fileType}, ${err.message}`)
           resolve(false)
         }
       )

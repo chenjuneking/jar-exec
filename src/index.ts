@@ -1,7 +1,6 @@
 import fs from 'fs'
 import path from 'path'
 import { spawn } from 'child_process'
-import fetch, { Response } from 'node-fetch'
 import {
   download,
   systemJavaExists,
@@ -9,6 +8,7 @@ import {
   extract,
   getJavaCommand,
   getJavaPath,
+  request,
 } from './utils'
 import { DOWNLOAD_TMP_DIR } from './constants'
 import { Manager } from './manager'
@@ -74,13 +74,10 @@ export async function install(version = 8, options: any = {}): Promise<number> {
     url += key + '=' + options[key] + '&'
   })
 
-  // fetch the json
-  const response: Response = await fetch(url)
-  if (response.status !== 200) {
-    println(`[Error] njar: failure to fetch ${url}, ${response.statusText}`)
-    return 0
-  }
-  const json = await response.json()
+  // fetch openjdk information
+  const json = await request(url, 0)
+  if (!json) return 0
+
   // get binary link & SHA text link from the downloaded json
   const binaryUrl = json.binaries[0]['binary_link']
   const shaTextUrl = json.binaries[0]['checksum_link']
@@ -100,7 +97,7 @@ export async function install(version = 8, options: any = {}): Promise<number> {
   }
 
   // verify the binary file
-  println(`[Info] njar: verifying...`)
+  println(`[Info] njar: verifying`)
   const shaText = fs.readFileSync(shaTextFile, 'utf-8').split(' ')[0]
   if (!(await verify(binaryFile, shaText))) {
     println(
@@ -110,7 +107,7 @@ export async function install(version = 8, options: any = {}): Promise<number> {
   }
 
   // extract the binary file
-  println(`[Info] njar: extract...`)
+  println(`[Info] njar: extract`)
   const jreDir = await extract(binaryFile, String(version))
 
   // save the downloaded jre path

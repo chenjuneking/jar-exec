@@ -1,10 +1,7 @@
 const path = require('path')
-const { executeJar, executeClassWithCP, which } = require('jar-exec')
+const { executeJar, executeClassWithCP } = require('jar-exec')
 
 async function main() {
-  const javaPath = which()
-  console.log(javaPath)
-
   const jarPath = path.join(__dirname, './java/Math/Math.jar')
   const result1 = await executeJar(jarPath, ['add', '21', '33'])
   console.log(result1) // '54'

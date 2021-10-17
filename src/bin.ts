@@ -13,7 +13,7 @@ async function main() {
     case 'install': {
       const version = args[1]
       if (version && VERSION_REGEX.test(version)) {
-        console.log(`[Info] njar: openjdk${version} installing...`)
+        console.log(`[Info] njar: openjdk${version} installing`)
         const result = await install(Number(version), {
           type: 'jre',
           allow_system_java: false,
