@@ -1,9 +1,0 @@
-// TODO
-//  [x] Build
-//  [x] Add github actions
-//  [x] Project ename to njar
-//  [x] Implement command: --help --version
-//  [x] Update test cases
-//  [x] Update readme.md for global use of njar
-//  [x] 考虑 which() 方法，如果有 openjdk 安装，则返回 use 的 openjdk javaPath，否则则返回系统自带的(done, 将系统自带的jdk加入manifest中)
-//  [ ] Publish to NPM
