@@ -11,7 +11,7 @@ import {
 import { NJAR_HOME_DIR } from '../src/constants'
 import { Manager } from '../src/manager'
 
-const TEST_TIMEOUT = 600000
+const TEST_TIMEOUT = 3 * 60 * 1000
 
 describe('Test index.ts', () => {
   afterAll(() => {

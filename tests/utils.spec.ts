@@ -114,32 +114,40 @@ describe('Test utils.ts', () => {
     expect(fs.existsSync(shaTextFile)).toBe(false)
   })
 
-  test('#extractTarGz()', async () => {
-    const binaryFile = path.join(__dirname, 'tmp', path.basename(BINARY_LINK))
-    // create extract dist dir
-    const dist = path.join(__dirname, 'tmp/extract/tar')
-    expect(fs.existsSync(dist)).toBe(false)
-    await makeDir(dist)
-    expect(fs.existsSync(dist)).toBe(true)
-    // tar file
-    const result = await extractTarGz(binaryFile, dist)
-    expect(result).toBe(true)
-  })
+  test(
+    '#extractTarGz()',
+    async () => {
+      const binaryFile = path.join(__dirname, 'tmp', path.basename(BINARY_LINK))
+      // create extract dist dir
+      const dist = path.join(__dirname, 'tmp/extract/tar')
+      expect(fs.existsSync(dist)).toBe(false)
+      await makeDir(dist)
+      expect(fs.existsSync(dist)).toBe(true)
+      // tar file
+      const result = await extractTarGz(binaryFile, dist)
+      expect(result).toBe(true)
+    },
+    TEST_TIMEOUT
+  )
 
-  test('#extractZip()', async () => {
-    // copy a tmp zip file
-    const zipFile = path.join(__dirname, './fixtures/foo.zip')
-    const tmpZipFile = path.join(__dirname, './fixtures/foo.tmp.zip')
-    fs.copyFileSync(zipFile, tmpZipFile)
-    // create dist dir
-    const dist = path.join(__dirname, './tmp/extract/zip')
-    expect(fs.existsSync(dist)).toBe(false)
-    await makeDir(dist)
-    expect(fs.existsSync(dist)).toBe(true)
-    // unzip file
-    const result = await extractZip(tmpZipFile, dist)
-    expect(result).toEqual(true)
-  })
+  test(
+    '#extractZip()',
+    async () => {
+      // copy a tmp zip file
+      const zipFile = path.join(__dirname, './fixtures/foo.zip')
+      const tmpZipFile = path.join(__dirname, './fixtures/foo.tmp.zip')
+      fs.copyFileSync(zipFile, tmpZipFile)
+      // create dist dir
+      const dist = path.join(__dirname, './tmp/extract/zip')
+      expect(fs.existsSync(dist)).toBe(false)
+      await makeDir(dist)
+      expect(fs.existsSync(dist)).toBe(true)
+      // unzip file
+      const result = await extractZip(tmpZipFile, dist)
+      expect(result).toEqual(true)
+    },
+    TEST_TIMEOUT
+  )
 
   test('#getJavaPath()', async () => {
     const platform = os.platform()
