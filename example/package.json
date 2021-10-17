@@ -7,8 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "JunQing Chen <342115615@qq.com>",
-  "license": "MIT",
   "dependencies": {
-    "njar": "file:../"
+    "njar": "^1.0.0"
   }
 }
