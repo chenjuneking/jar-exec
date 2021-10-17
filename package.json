@@ -16,8 +16,18 @@
     "lint": "eslint",
     "prepare": "npm run build"
   },
+  "keywords": [
+    "jar",
+    "node jar",
+    "njar",
+    "java",
+    "run jar",
+    "run java",
+    "jdk",
+    "jdk version manager"
+  ],
   "author": "JunQing Chen <342115615@qq.com>",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "abort-controller": "^3.0.0",
     "bytes": "^3.1.0",
@@ -50,5 +60,12 @@
     "prettier": "^2.4.1",
     "start-server-and-test": "^1.14.0",
     "ts-jest": "^27.0.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chenjuneking/njar.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chenjuneking/njar/issues"
   }
 }

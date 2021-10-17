@@ -6,7 +6,7 @@ This package helps with running JAR files or Java classes on Node.js.
 
 ### Example
 
-For more details, see [example](https://github.com/chenjuneking/njar/tree/main/example).
+For more details, see the [example](https://github.com/chenjuneking/njar/tree/main/example).
 
 ## Install
 
