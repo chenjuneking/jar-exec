@@ -5,3 +5,4 @@ coverage/
 jre-tmp/
 example/package-lock.json
 .DS_Store
+foo.tmp.zip

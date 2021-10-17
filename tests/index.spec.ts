@@ -1,12 +1,21 @@
 import path from 'path'
 import { execSync } from 'child_process'
-import { executeClassWithCP, executeJar, install } from '../src'
+import {
+  executeClassWithCP,
+  executeJar,
+  install,
+  use,
+  versions,
+  which,
+} from '../src'
+import { NJAR_HOME_DIR } from '../src/constants'
+import { Manager } from '../src/manager'
 
 const TEST_TIMEOUT = 600000
 
-describe.skip('Test index.ts', () => {
-  beforeAll(() => {
-    execSync(`rm -rf ${path.join(__dirname, '../dist/jre')}`)
+describe('Test index.ts', () => {
+  afterAll(() => {
+    execSync(`rm -rf ${NJAR_HOME_DIR}`)
   })
 
   test(
@@ -22,7 +31,7 @@ describe.skip('Test index.ts', () => {
   )
 
   test(
-    '#install() - it should return 1 whatever system exists java',
+    '#install() - it should return 1 whatever system java exists',
     async () => {
       const result = await install(16, {
         type: 'jre',
@@ -32,6 +41,22 @@ describe.skip('Test index.ts', () => {
     },
     TEST_TIMEOUT
   )
+
+  test('#versions()', async () => {
+    const list = await versions()
+    expect(list).toEqual(['16', 'system'])
+  })
+
+  test('#which()', async () => {
+    const javaPath = await which()
+    expect(javaPath).toContain('/bin/java')
+  })
+
+  test('#use()', async () => {
+    await use('16')
+    const manager = await Manager.getInstance()
+    expect(manager.getCurrentVersion()).toEqual('16')
+  })
 
   test('#executeJar()', async () => {
     const jarPath = path.join(__dirname, './fixtures/example/Math/Math.jar')

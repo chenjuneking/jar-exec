@@ -10,7 +10,7 @@ import tar from 'tar'
 import internal from 'stream'
 import {
   DOWNLOAD_ABORT_TIMEOUT,
-  JAR_EXEC_VERSIONS_DIR,
+  NJAR_VERSIONS_DIR,
   MAX_DOWNLOAD_RECURSIVE,
 } from './constants'
 import { withProgress } from './progress'
@@ -307,5 +307,5 @@ export async function getJavaCommand(): Promise<string> {
 }
 
 export function getExtractDir(version: string): string {
-  return path.join(JAR_EXEC_VERSIONS_DIR, version)
+  return path.join(NJAR_VERSIONS_DIR, version)
 }

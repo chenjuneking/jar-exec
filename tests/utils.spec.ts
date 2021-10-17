@@ -14,34 +14,39 @@ import {
   move,
   verify,
 } from '../src/utils'
-import { use } from '../src/index'
-import { Manager } from '../src/manager'
+import { MANIFEST_PATH, NJAR_HOME_DIR } from '../src/constants'
 
-const VERSION = '16'
 const BINARY_LINK =
   'https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_linux_hotspot_16.0.1_9.tar.gz'
 const CHECKSUM_LINK =
   'https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_linux_hotspot_16.0.1_9.tar.gz.sha256.txt'
 const DIR = path.join(__dirname, './tmp/a/b')
-const TEST_TIMEOUT = 600000
+const TEST_TIMEOUT = 3 * 60 * 1000
 
 describe('Test utils.ts', () => {
+  beforeAll(() => {
+    fs.mkdirSync(NJAR_HOME_DIR)
+    fs.writeFileSync(
+      MANIFEST_PATH,
+      JSON.stringify({
+        jrePath: {
+          '16': path.join(__dirname, 'tmp/extract/tar'),
+        },
+        currentVersion: '16',
+      })
+    )
+  })
+
   afterAll(() => {
-    const manager = Manager.getInstance()
-    if (fs.existsSync(manager.manifest)) {
-      execSync(`rm ${manager.manifest}`)
-    }
-    const tmpDir = path.join(__dirname, './tmp')
-    if (fs.existsSync(manager.manifest)) {
-      execSync(`rm -rf ${tmpDir}`)
-    }
+    execSync(`rm -rf ${NJAR_HOME_DIR}`)
+    execSync(`rm -rf ${path.join(__dirname, './tmp')}`)
   })
 
   test('#getExecutable()', () => {
     const platform = os.platform()
     const result = getExecutable()
     if (platform === 'darwin') {
-      expect(result).toEqual('Contents/Home/bin/java')
+      expect(result).toEqual('bin/java')
     }
     if (platform === 'win32') {
       expect(result).toEqual('bin/java.exe')
@@ -61,10 +66,13 @@ describe('Test utils.ts', () => {
   test(
     '#download()',
     async () => {
-      const result1 = await download(BINARY_LINK, DIR)
-      expect(result1).toEqual(`${DIR}/${path.basename(BINARY_LINK)}`)
-      const result2 = await download(CHECKSUM_LINK, DIR)
-      expect(result2).toEqual(`${DIR}/${path.basename(CHECKSUM_LINK)}`)
+      const binaryFile = path.join(DIR, path.basename(BINARY_LINK))
+      const result1 = await download(BINARY_LINK, binaryFile)
+      expect(result1).toBe(true)
+
+      const shaTextFile = path.join(DIR, path.basename(CHECKSUM_LINK))
+      const result2 = await download(CHECKSUM_LINK, shaTextFile)
+      expect(result2).toBe(true)
     },
     TEST_TIMEOUT
   )
@@ -78,50 +86,64 @@ describe('Test utils.ts', () => {
 
   test('#verify()', async () => {
     const binaryFile = `${DIR}/${path.basename(BINARY_LINK)}`
-    const shaFile = `${DIR}/${path.basename(CHECKSUM_LINK)}`
-    const shaText = await fs.readFileSync(shaFile, 'utf-8').split(' ')[0]
+    const shaTextFile = `${DIR}/${path.basename(CHECKSUM_LINK)}`
+    const shaText = await fs.readFileSync(shaTextFile, 'utf-8').split(' ')[0]
     expect(shaText).toBeTruthy()
     const result = await verify(binaryFile, shaText)
     expect(result).toBe(true)
   })
 
-  test('#move() & extractTarGz()', async () => {
+  test('#move()', async () => {
     // move
     const binaryFile = `${DIR}/${path.basename(BINARY_LINK)}`
-    const destDir = path.join(__dirname, './tmp')
-    const newFile = await move(binaryFile, destDir)
-    expect(typeof newFile).toEqual('string')
-    expect(fs.existsSync(newFile as string)).toBe(true)
+    const shaTextFile = `${DIR}/${path.basename(CHECKSUM_LINK)}`
+    const destDir = path.join(__dirname, 'tmp')
+
+    const newBanaryFile = await move(binaryFile, destDir)
+    expect(newBanaryFile).toEqual(
+      path.join(__dirname, 'tmp', path.basename(BINARY_LINK))
+    )
+    expect(fs.existsSync(newBanaryFile)).toBe(true)
+    expect(fs.existsSync(binaryFile)).toBe(false)
+
+    const newShaTextFile = await move(shaTextFile, destDir)
+    expect(newShaTextFile).toEqual(
+      path.join(__dirname, 'tmp', path.basename(CHECKSUM_LINK))
+    )
+    expect(fs.existsSync(newShaTextFile)).toBe(true)
+    expect(fs.existsSync(shaTextFile)).toBe(false)
+  })
+
+  test('#extractTarGz()', async () => {
+    const binaryFile = path.join(__dirname, 'tmp', path.basename(BINARY_LINK))
     // create extract dist dir
-    const dist = path.join(__dirname, './tmp/a/b/extract/tar')
+    const dist = path.join(__dirname, 'tmp/extract/tar')
     expect(fs.existsSync(dist)).toBe(false)
     await makeDir(dist)
     expect(fs.existsSync(dist)).toBe(true)
     // tar file
-    const result = await extractTarGz(newFile as string, dist, VERSION)
-    expect(typeof result).toEqual('string')
+    const result = await extractTarGz(binaryFile, dist)
+    expect(result).toBe(true)
   })
 
   test('#extractZip()', async () => {
     // copy a tmp zip file
     const zipFile = path.join(__dirname, './fixtures/foo.zip')
     const tmpZipFile = path.join(__dirname, './fixtures/foo.tmp.zip')
-    // create dist dir
     fs.copyFileSync(zipFile, tmpZipFile)
-    const dist = path.join(__dirname, './tmp/a/b/extract/zip')
+    // create dist dir
+    const dist = path.join(__dirname, './tmp/extract/zip')
     expect(fs.existsSync(dist)).toBe(false)
     await makeDir(dist)
     expect(fs.existsSync(dist)).toBe(true)
     // unzip file
     const result = await extractZip(tmpZipFile, dist)
-    expect(typeof result).toEqual('string')
-    expect(fs.existsSync(tmpZipFile)).toBe(false)
+    expect(result).toEqual(true)
   })
 
-  test('#getJavaPath()', () => {
-    use(VERSION)
+  test('#getJavaPath()', async () => {
     const platform = os.platform()
-    const result = getJavaPath()
+    const result = await getJavaPath()
     if (platform === 'darwin') {
       expect(result).toContain('Contents/Home/bin/java')
     }
