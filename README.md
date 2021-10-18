@@ -6,7 +6,7 @@ This package helps with running JAR files or Java classes on Node.js.
 
 ### Preview
 
-[preview](https://raw.githubusercontent.com/chenjuneking/njar/main/preview.gif)
+![preview](https://raw.githubusercontent.com/chenjuneking/njar/main/preview.gif)
 
 ### Example
 
