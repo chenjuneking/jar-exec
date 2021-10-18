@@ -8,6 +8,6 @@
   },
   "author": "JunQing Chen <342115615@qq.com>",
   "dependencies": {
-    "njar": "file:.."
+    "njar": "^1.0.3"
   }
 }

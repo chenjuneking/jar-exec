@@ -4,6 +4,10 @@
 
 This package helps with running JAR files or Java classes on Node.js.
 
+### Preview
+
+[preview](https://raw.githubusercontent.com/chenjuneking/njar/main/preview.gif)
+
 ### Example
 
 For more details, see the [example](https://github.com/chenjuneking/njar/tree/main/example).
@@ -27,10 +31,10 @@ njar use 16 # use openjdk16
 ### Running JAR files on CLI
 
 ```bash
-# running jar file
+# running jar files
 njar exec ./Math.jar add 11 22
 
-# running jar file with cp
+# running jar files with cp
 njar exec -cp ./Math.jar App.Main add 11 22
 # running compiled classes with cp
 njar exec -cp . App.Main add 11 22
