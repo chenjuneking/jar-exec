@@ -1,10 +1,10 @@
 {
   "name": "njar",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Running JAR files on node.js",
   "main": "dist/index.js",
   "bin": {
-    "njar": "dist/bin.js"
+    "njar": "dist/bin/index.js"
   },
   "files": [
     "dist"

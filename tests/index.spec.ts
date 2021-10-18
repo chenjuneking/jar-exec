@@ -1,13 +1,6 @@
 import path from 'path'
 import { execSync } from 'child_process'
-import {
-  executeClassWithCP,
-  executeJar,
-  install,
-  use,
-  versions,
-  which,
-} from '../src'
+import { executeWithCP, execute, install, use, versions, which } from '../src'
 import { NJAR_HOME_DIR } from '../src/constants'
 import { Manager } from '../src/manager'
 
@@ -61,7 +54,7 @@ describe('Test index.ts', () => {
   test('#executeJar()', async () => {
     const jarPath = path.join(__dirname, './fixtures/example/Math/Math.jar')
     const args = ['add', '21', '32']
-    const result = await executeJar(jarPath, args)
+    const result = await execute(jarPath, args)
     expect(result).toEqual('53')
   })
 
@@ -69,7 +62,7 @@ describe('Test index.ts', () => {
     const className = 'App.Main'
     const classPaths = path.join(__dirname, './fixtures/example/Math')
     const args = ['add', '21', '32']
-    const result = await executeClassWithCP(className, classPaths, args)
+    const result = await executeWithCP(className, classPaths, args)
     expect(result).toEqual('53')
   })
 
@@ -78,13 +71,13 @@ describe('Test index.ts', () => {
       __dirname,
       './fixtures/example/JBCrypt/JBCrypt.jar'
     )
-    const hashed = await executeJar(jarPath, ['hashpw', 'foobar'])
+    const hashed = await execute(jarPath, ['hashpw', 'foobar'])
     expect(hashed.startsWith('$')).toBe(true)
 
-    const r1 = await executeJar(jarPath, ['checkpw', '123456', hashed])
+    const r1 = await execute(jarPath, ['checkpw', '123456', hashed])
     expect(r1).toBe('false')
 
-    const r2 = await executeJar(jarPath, ['checkpw', 'foobar', hashed])
+    const r2 = await execute(jarPath, ['checkpw', 'foobar', hashed])
     expect(r2).toBe('true')
   })
 })

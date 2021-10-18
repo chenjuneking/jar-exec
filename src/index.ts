@@ -149,12 +149,12 @@ export async function versions(): Promise<string[]> {
  * @param args {string[]} optional arguments that will be appended while executing
  * @returns {string} the result string
  * Usage:
- *    const result = await executeJar(
+ *    const result = await execute(
  *      path.join(__dirname, './example/Math/Math.jar'),
  *      ['add', '21', '32']
  *    )
  */
-export async function executeJar(
+export async function execute(
   jarPath: string,
   args: string[] = []
 ): Promise<string> {
@@ -187,9 +187,9 @@ export async function executeJar(
  *      ['add', '21', '32']
  *    )
  */
-export async function executeClassWithCP(
-  className: string,
+export async function executeWithCP(
   classPaths = '',
+  className: string,
   args: string[] = []
 ): Promise<string> {
   const javaCommand = await getJavaCommand()

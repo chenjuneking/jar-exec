@@ -24,36 +24,48 @@ njar install 16 # install openjdk16
 njar use 16 # use openjdk16
 ```
 
-### Running JAR files
+### Running JAR files on CLI
+
+```bash
+# running jar file
+njar exec ./Math.jar add 11 22
+
+# running jar file with cp
+njar exec -cp ./Math.jar App.Main add 11 22
+# running compiled classes with cp
+njar exec -cp . App.Main add 11 22
+```
+
+### Running JAR files programmatically
 
 ```javascript
 const path = require('path')
-const { executeJar } = require('njar')
+const { execute } = require('njar')
 
 async function main() {
-  const jarPath = path.join(__dirname, './java/Math/Math.jar')
-  const result = await executeJar(jarPath, ['add', '21', '33'])
-  console.log(result) // '54'
+  const jarPath = path.join(__dirname, './Math.jar')
+  const result = await execute(jarPath, ['add', '2', '4'])
+  console.log(result) // '6'
 }
 
 main()
 ```
 
-### Running Java classes
+### Running with cp
 
 ```javascript
 const path = require('path')
-const { executeClassWithCP } = require('njar')
+const { executeWithCP } = require('njar')
 
 async function main() {
   const className = 'App.Main'
-  const classPaths = path.join(__dirname, './java/Math')
-  const result = await executeClassWithCP(className, classPaths, [
+  const classPaths = path.join(__dirname, '.')
+  const result = await executeWithCP(classPaths, className, [
     'multiply',
-    '21',
-    '33',
+    '2',
+    '3',
   ])
-  console.log(result) // '693'
+  console.log(result) // '6'
 }
 
 main()
@@ -66,5 +78,6 @@ njar install [version]  # Install a JDK version
 njar use [version]      # Set the JDK version
 njar versions           # List all JDK versions available to njar
 njar which              # Display the full path to an executable
+njar exec               # Running java application
 njar --help             # Show help information
 ```

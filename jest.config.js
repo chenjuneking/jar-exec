@@ -8,5 +8,5 @@ module.exports = {
     '^.+\\.js$': 'babel-jest',
   },
   transformIgnorePatterns: ['node_modules/(?!(node\\-fetch|fetch\\-blob)/)'],
-  // setupFiles: ['<rootDir>/testSetup.ts'],
+  setupFiles: ['<rootDir>/src/jestSetup.ts'],
 }
