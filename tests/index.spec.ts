@@ -51,18 +51,18 @@ describe('Test index.ts', () => {
     expect(manager.getCurrentVersion()).toEqual('16')
   })
 
-  test('#executeJar()', async () => {
+  test('#execute()', async () => {
     const jarPath = path.join(__dirname, './fixtures/example/Math/Math.jar')
     const args = ['add', '21', '32']
     const result = await execute(jarPath, args)
     expect(result).toEqual('53')
   })
 
-  test('#executeClassWithCP()', async () => {
+  test('#executeWithCP()', async () => {
     const className = 'App.Main'
     const classPaths = path.join(__dirname, './fixtures/example/Math')
     const args = ['add', '21', '32']
-    const result = await executeWithCP(className, classPaths, args)
+    const result = await executeWithCP(classPaths, className, args)
     expect(result).toEqual('53')
   })
 
